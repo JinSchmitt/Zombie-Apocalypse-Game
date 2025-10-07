@@ -1,0 +1,481 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Zombies</title>
+    <link href="https://fonts.googleapis.com/css?family=Griffy&display=swap&quot; rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Great+Vibes&display=swap&quot; rel="stylesheet">
+
+    <style>
+        /******* NEW *******/
+        /* Prevent scroll bars from appearing as the zombies get large enough to create them */
+        html {
+            overflow: hidden;
+        }
+
+        /* Set a starting background picture, prevent zombies from getting selected when we click on them */
+        body {
+            background-image: url(images/background1.jpg);
+            background-attachment: fixed;
+            background-size: cover;
+            user-select: none; /* Prevents selection */
+        }
+
+        /******* NEW/CHANGE *******/
+        /* Resolution 1366x768 work windows — 1600x1000 mac homes */
+        /* Individually style my zombies, margin-left positions them on the screen */
+        #zombie1 {
+            margin-left: 150px;
+            margin-top: 200px;
+        }
+        /* zombie 2*/
+        #zombie2 {
+            margin-left: 350px;
+            margin-top: 350px;
+        }
+        /* zombie 3*/
+        #zombie3 {
+            margin-left: 550px;
+            margin-top: 550px;
+        }
+        /* zombie 4*/
+        #zombie4 {
+            margin-left: 750px;
+            margin-top: 650px;
+        }
+        /* zombie 5*/
+        #zombie5 {
+            margin-left: 950px;
+            margin-top: 650px;
+        }
+        /* zombie 6*/
+        #zombie6 {
+            margin-left: 1150px;
+            margin-top: 550px;
+        }
+        /* zombie 7*/
+        #zombie7 {
+            margin-left: 1350px;
+            margin-top: 350px;
+        }
+        /* zombie 8*/
+        #zombie8 {
+            margin-left: 1550px;
+            margin-top: 200px;
+        }
+
+
+        /******* NEW *******/
+        /* Set zombies to 0 width so invisible at start, make them position absolute so they don't affect each other */
+        /* Make sure they don't have a border from surrounding a link */
+        .zombies {
+            width: 0px;
+            position: absolute;
+            border: 0px solid #FFFFFF;
+        }
+
+        /* Class for a tag to turn cursor to crosshair */
+        .ahrefzombie {
+            cursor: url(images/crosshair-red.png), auto;
+            border: 0px solid #FFFFFF;
+        }
+
+        /* Style the score element that displays score to the user */
+        #score {
+            color: #FFFFFF;
+            font-weight: bold;
+        }
+        /* Gamemess vairable*/
+        #GameMess {
+            position: absoute;
+            font-weight: bold;
+            text-align: center;
+        }
+        /* start class*/
+        .start{
+            font-size: 30px;
+            color: white;
+            margin-top: 100px;
+            margin-left:180px;
+        }
+        /* win class*/
+        .win{
+            font-family: 'Great Vibes', cursive;
+            color: green;
+            margin-top: 160px;
+            margin-left: 375px;
+            text-shadow: 2px 2px #000000;
+            font-size:70px;
+        }
+        /* lose class*/
+        .lose{
+            font-family: 'Griffy', cursive;
+            color: red;
+            margin-top: 160px;
+            margin-left: 375px;
+            text-shadow: 2px 2px #000000;
+            font-size:70px;
+            max-width: 100%;
+            
+        }
+
+       
+    </style>
+    <script>
+        /****************************************
+         * SetTimeout powers zombie game by delaying function
+         * & call in an endless loop
+         ****************************************/
+
+        var score = 0;  // Variable for tracking the score of my game
+        var GAMEOVERSIZE = 500; //size of zombie image for gameover
+        var NUMHITS = 2; //number of hits each zombie will need to be hit to die
+        var NUMZOMBIES = 8; //var for zombies
+        var gameover = false; //gameover variable
+        var zombiespeed = 1000; //initializes zombie speed
+        var level = 1; //intitializes the level number
+        var zombies = []; //array for loop through zombies
+        document.getElementById('levelselect').style.display="inline";
+
+
+        //class for creating zombie objects 
+        function Zman(zsize, id, thestyle, zMarginLeft) {
+            this.zsize = zsize;
+            this.id = id;
+            this.thestyle = thestyle;
+            this.thestyle.style.marginLeft = zMarginLeft +"px";
+            this.hits = 0;
+
+        }
+
+        
+
+        /******* NEW/CHANGE *******/
+        // This function is called by button to start the game
+        function start() {
+             // Array of background images for each click
+            var backgrounds = [
+                "url('images/background1.jpg')",
+                "url('images/background2.jpg')",
+                "url('images/level3.jpg')",
+                "url('images/level4.webp')",
+                "url('images/level5.jpg')",
+                "url('images/level6.jpg')",
+                "url('images/level7.avif')",
+                "url('images/level8.webp')",
+                "url('images/level9.jpg')",
+                "url('images/level10.webp')"
+            ];
+
+            // Track the current background index
+            var currentBackgroundIndex = 0;
+
+        // Update background to the next one in the array
+            document.body.style.backgroundImage = backgrounds[currentBackgroundIndex];
+
+        // Increment the index and loop back to the beginning if at the end
+            currentBackgroundIndex = (currentBackgroundIndex + 1) % backgrounds.length;
+
+            level = Number(document.getElementById("levelselect").value);
+            document.getElementById("levelselect").style.display = "none";
+            document.getElementById("start").style.display = "none";
+            document.getElementById("score").innerHTML = "Score: " + score + "<br>Level: " + level; 
+            gameover = false;
+            //STUDENT loop through zombie array:
+            for (var i = 0; i < NUMZOMBIES; i++) {
+                zombies[i].thestyle.style.display = "block";
+                zombies[i].zsize = 0; // Reset size
+                zombies[i].thestyle.style.width = "0px"; // Reset width
+                zombies[i].hits = 0; // Reset hits
+                zombies[i].thestyle.style.marginLeft = myrandom(20, 1600) + "px"; // Randomize position
+                zombies[i].thestyle.style.marginTop = myrandom(20, 350) + "px";
+            }
+            //STUDENT stop sounds from a win or a lose:
+
+            switch(level){
+                case 2: 
+                    document.body.style.backgroundImage = "url('images/background-lose.jpg')";
+                    zombiespeed = 875;
+                break;
+
+                case 3:
+                    document.body.style.backgroundImage = "url('images/level3.jpg')";
+                    zombiespeed = 750;
+                break;
+
+                case 4: 
+                    document.body.style.backgroundImage = "url('images/level4.webp')";
+                    zombiespeed = 625;
+                    break;
+
+                case 5:
+                    document.body.style.backgroundImage = "url('images/level5.jpg')";
+                    zombiespeed = 500;
+                break;
+
+                case 6: 
+                    document.body.style.backgroundImage = "url('images/level6.jpg')";
+                    zombiespeed = 375;
+                break;
+
+                case 7:
+                    document.body.style.backgroundImage = "url('images/level7.avif')";
+                    zombiespeed = 250;
+                break;
+
+                case 8: 
+                    document.body.style.backgroundImage = "url('images/level8.webp')";
+                    zombiespeed = 125;
+                break;
+
+                case 9: 
+                    document.body.style.backgroundImage = "url('images/level9.jpg')";
+                    zombiespeed = 50;
+
+                break;
+
+                case 10: 
+                    document.body.style.backgroundImage = "url('images/level10.webp')";
+                    zombiespeed = 10;
+                break;
+            }
+        
+
+            document.getElementById("GameMess").innerHTML = "";
+
+            var x = document.getElementById("GameMess"); //creates gamemess as a variable
+            x.className = x.className.replace("start", "");
+            if (x.className.indexOf("win")> 0) { //checks that win exists 
+                x.className = x.className.replace(" win" , "");
+            }
+
+
+            setTimeout(function() { zombiesize(z1); }, 500);
+            setTimeout(function() { zombiesize(z2); }, 500);
+            setTimeout(function() { zombiesize(z3); }, 500);
+            setTimeout(function() { zombiesize(z4); }, 500);
+            setTimeout(function() { zombiesize(z5); }, 500);
+            setTimeout(function() { zombiesize(z6); }, 500);
+            setTimeout(function() { zombiesize(z7); }, 500);
+            setTimeout(function() { zombiesize(z8); }, 500);
+
+
+        }
+
+        // Changes the size of a zombie image based on its given ID
+        function zombiesize(obj) {
+            if(gameover == false){ //if game is running
+                if(obj.zsize >= GAMEOVERSIZE) {//zombie got too big and player lost
+                    document.getElementById('bite').play();
+                    setTimeout(function(){gameOver('lose');}, 500);
+                    gameover = true;
+                    
+                    
+
+                }else if(obj.hits < NUMHITS && gameover == false){//still playing
+                    document.getElementById('marchingzombie').play();
+                    obj.zsize += 20;
+                    obj.thestyle.style.width = obj.zsize + "px";
+                    setTimeout(function(){zombiesize(obj);}, zombiespeed)
+                    
+
+                }else{//player won the game
+                    gameover = true;
+                    obj.zsize = 0;
+                    document.getElementById('yahoo').play();
+                    setTimeout(function(){gameOver('win');}, 3000);
+                    zombies.style.display = none;
+                }
+            } 
+        }
+
+        /******* NEW/CHANGE *******/
+        // This function will be called whenever we click on a zombie
+        function headshot(obj) {
+            // When this happens, I have successfully shot zombie
+            if (myrandom(1, 4) == 1) {
+                
+                document.getElementById('pewpew').play();
+                obj.zsize = 0;
+                obj.hits += 1;
+                
+                obj.thestyle.style.width = 0;
+                
+                obj.thestyle.style.marginLeft = myrandom(20,1000) + "px";                
+                obj.thestyle.style.marginTop = myrandom(20,350) + "px"; 
+                score += 1;
+                document.getElementById("score").innerHTML = "score: " + score + "<br>level: " + level;
+            }
+        }
+
+        // This creates a random number between min and max
+        function myrandom(min, max) {
+            var random = Math.floor(Math.random() * (max - min) + min);
+            return random; // Return random number
+        }
+
+        function gameOver(result){ //function to determine what happens after each win or loss
+
+           for(var i=0; i<NUMZOMBIES;i++){
+            //loop through and hide zombies and reset them
+                zombies[i].thestyle.style.width = "0px";
+                zombies[i].thestyle.style.display = "none";
+                zombies[i].zsize = 0; 
+                zombies[i].hits = 0;    
+            }
+            //student fix size bug
+
+            //student fix level bug
+
+           var x = document.getElementById('GameMess'); //creates gamemess variable
+           document.getElementById('levelselect').style.display="inline";
+           document.getElementById('levelselect').value=1;
+           document.getElementById("start").style.display = "inline";
+
+           
+
+        
+    
+           
+           
+           
+           if(result == "win"){ //if user wins these things will happen
+                document.getElementById('winbirds').play();
+                level += 1;
+                zombiespeed -= 150;
+                x.className += " win";
+                document.getElementById("GameMess").innerHTML = "You have survived <br> and made it to safety!!";
+                document.body.style.backgroundImage = "url('images/background-win.jpg')";
+                //updateBackground();
+               
+
+            }else{ //if user loses these things will happen
+                document.getElementById('losehell').play();
+                level == 1;
+                zombiespeed == 1000;
+                x.className += " lose";
+                document.body.style.backgroundImage = "url('images/loser-town.png')";
+
+            }
+    
+        }
+    </script>
+</head>
+<body>
+
+    <!--Preload sound Files-->
+    <audio id="pewpew" src="sounds/pew_pew.wav" preload="auto"></audio>
+    <audio id="marchingzombie" src="sounds/mummy.wav" preload="auto"></audio>
+    <audio id="bite" src="sounds/bite.wav" preload="auto"></audio>
+    <audio id="yahoo" src="sounds/yahoo.wav" preload="auto"></audio>
+    <audio id="winbirds" src="sounds/rainforest_win.wav" preload="auto"></audio>
+    <audio id="losehell" src="sounds/lose.wav" preload="auto"></audio>
+   
+   
+   
+    <!-- Start button calls start function when clicked -->
+    <button onclick="start()" id="start">Start</button><br>
+
+   
+   
+   
+    <!-- Element for output of score to user -->
+    <span id="score">Score: 0<br>Level: 1</span><br>
+
+
+  
+  
+  
+  
+    <!--Picks the level dissappears on click-->
+    <select id="levelselect">
+        <option value="1">Level 1</option>
+        <option value="2">Level 2</option>
+        <option value="3">Level 3</option>
+        <option value="4">Level 4</option>
+        <option value="5">Level 5</option>
+        <option value="6">Level 6</option>
+        <option value="7">Level 7</option>
+        <option value="8">Level 8</option>
+        <option value="9">Level 9</option>
+        <option value="10">Level 10</option>
+
+    </select> <br> <br>
+
+
+    <!--Message area from start, win and lose of game-->
+    <span id="GameMess" class="start">
+        Welcome to the Zombie Apocalypse<br> Click "Start" to play. <br>
+        Click the zombies to stop them, you mostly miss because your hand is shaking and you suck at video games. <br>
+        Hit start for next level or next game. <br> Refresh your browser completely to restart your level.
+    </span>
+
+
+
+
+    <!-- My zombies -->
+    <a href="#" class="ahrefzombie" onclick="headshot(z1)">
+        <img src="images/zombie4.png" id="zombie1" class="zombies" alt=""/>
+    </a>
+
+    <a href="#" class="ahrefzombie" onclick="headshot(z2)">
+        <img src="images/zombie3.png" id="zombie2" class="zombies" alt=""/>
+    </a>
+    <a href="#" class="ahrefzombie" onclick="headshot(z3)">
+        <img src="images/zombie1.png" id="zombie3" class="zombies" alt=""/>
+    </a>
+
+    <a href="#" class="ahrefzombie" onclick="headshot(z4)">
+        <img src="images/zombie2.png" id="zombie4" class="zombies" alt=""/>
+    </a>
+
+    <a href="#" class="ahrefzombie" onclick="headshot(z5)">
+        <img src="images/zombie5.png" id="zombie5" class="zombies" alt=""/>
+    </a>
+
+    <a href="#" class="ahrefzombie" onclick="headshot(z6)">
+        <img src="images/zombie6.png" id="zombie6" class="zombies" alt=""/>
+    </a>
+
+    <a href="#" class="ahrefzombie" onclick="headshot(z7)">
+        <img src="images/zombie7.png" id="zombie7" class="zombies" alt=""/>
+    </a>
+
+    <a href="#" class="ahrefzombie" onclick="headshot(z8)">
+        <img src="images/zombie8.png" id="zombie8" class="zombies" alt=""/>
+    </a>
+
+    <!--Variables for zombie men-->
+    <script>
+        var z1 = new Zman (0, "zombie1" , document.getElementById('zombie1'), 50);
+
+        var z2 = new Zman (20, "zombie2" , document.getElementById('zombie2'), 200);
+
+        var z3 = new Zman (40, "zombie3" , document.getElementById('zombie3'), 350);
+        
+        var z4 = new Zman (20, "zombie4" , document.getElementById('zombie4'), 500);
+
+        var z5 = new Zman (20, "zombie5" , document.getElementById('zombie5'), 650);
+
+        var z6 = new Zman (20, "zombie6" , document.getElementById('zombie6'), 800);
+
+        var z7 = new Zman (20, "zombie7" , document.getElementById('zombie7'), 950);
+
+        var z8 = new Zman (20, "zombie8" , document.getElementById('zombie8'), 1100);
+
+
+
+        //load zombies into an array for group manipulation
+        zombies.push(z1);
+        zombies.push(z2);
+        zombies.push(z3);
+        zombies.push(z4);
+        zombies.push(z5);
+        zombies.push(z6);
+        zombies.push(z7);
+        zombies.push(z8);
+        
+
+    </script>
+</body>
+</html>
